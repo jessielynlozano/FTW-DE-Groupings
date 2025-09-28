@@ -5,8 +5,9 @@
 ## 1. Project Overview - 
 
 - **Dataset Used:**  
-  **Dataset:**Chinook music store
-  **Domain:**artists, albums, tracks, genres, playlist, media type, customer, employee, invoice, invoice line
+  Dataset: Chinook music store
+
+  Domain:artists, albums, tracks, genres, playlist, media type, customer, employee, invoice, invoice line
 
 - **Goal of the Exercise:**  
   Convert the Chinook dataset into a dimensional model to answer business questions. After creating the schema, do the RCM pipeline.
@@ -35,7 +36,7 @@
 ## 3. Modeling Process 
 
 - **Star Schema Design:**  
-![Schema](..assets/chinook_schema.png)
+![Schema](../assets/chinook_schema.png)
  
 
 - **Challenges / Tradeoffs:**  
