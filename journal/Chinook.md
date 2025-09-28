@@ -1,61 +1,49 @@
-# 📝 Beginner Data Engineer Documentation & Presentation Guide
-
-This guide is for documenting and presenting your group’s **dimensional modeling exercise**.  
-Follow the structure below, fill in your team’s work, and use it as both internal documentation and a final presentation outline.  
+# 🎵Documentation: Chinook Music Store
 
 ---
 
-## 1. Project Overview
+## 1. Project Overview - 
 
 - **Dataset Used:**  
-  *(Briefly describe the dataset and domain — e.g., Chinook music store, OULAD education dataset, or IMDb entertainment dataset.)*  
+  **Dataset:**Chinook music store
+  **Domain:**artists, albums, tracks, genres, playlist, media type, customer, employee, invoice, invoice line
 
 - **Goal of the Exercise:**  
-  *(What was the objective? Example: transform OLTP schema into dimensional star schema for analytics.)*  
+  Convert the Chinook dataset into a dimensional model to answer business questions. After creating the schema, do the RCM pipeline.
 
 - **Team Setup:**  
   *(State if you worked individually, as a group, or both. Mention collaboration style.)*  
 
-- **Environment Setup:**  
-  *(Describe your environment — local vs remote, individual vs shared instances. Example: Docker containers on a shared VM + local laptops.)*  
-
 ---
 
 ## 2. Architecture & Workflow
-
 - **Pipeline Flow:**  
-  *(Diagram or describe: raw → clean → mart → BI.)*  
+  **raw → clean → mart → Metabase**  
 
 - **Tools Used:**  
   - Ingestion: `dlt`  
   - Modeling: `dbt`  
   - Visualization: `Metabase`  
-  *(Add others if used.)*  
 
 - **Medallion Architecture Application:**  
   - **Bronze (Raw):** Initial ingestion of source data  
   - **Silver (Clean):** Cleaning, type casting, handling missing values  
   - **Gold (Mart):** Business-ready star schema for BI  
 
-*(Insert diagram or screenshot here if possible.)*  
-
 ---
 
-## 3. Modeling Process
-
-- **Source Structure (Normalized):**  
-  *(Describe how the original tables were structured — 3NF, relationships, etc.)*  
+## 3. Modeling Process 
 
 - **Star Schema Design:**  
-  - Fact Tables: *(e.g., FactSales, FactAssessment, FactRatings)*  
-  - Dimension Tables: *(e.g., Customer, Date, Genre, Student, Demographics, Title, Person)*  
+
+ 
 
 - **Challenges / Tradeoffs:**  
-  *(E.g., handling missing data, many-to-many joins, exploding arrays, performance considerations.)*  
+  - Repeating tables due to **append** 
 
 ---
 
-## 4. Collaboration & Setup
+## 4. Collaboration & Setup - Monette
 
 - **Task Splitting:**  
   *(How the team divided ingestion, modeling, BI dashboards, documentation.)*  
