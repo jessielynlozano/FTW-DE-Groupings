@@ -35,7 +35,7 @@
 ## 3. Modeling Process 
 
 - **Star Schema Design:**  
-
+![Schema](assets/chinook_schema.png)
  
 
 - **Challenges / Tradeoffs:**  
