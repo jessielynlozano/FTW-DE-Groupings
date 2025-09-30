@@ -85,6 +85,7 @@ GROUP BY
 ORDER BY
     cu.country,
     total_revenue DESC;
+  
 
 - **Key Insights:**  
   - Rock is the most profitable genre in the US with heavy margins compared to the others
