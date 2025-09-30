@@ -69,7 +69,23 @@
   5. Do average unit prices differ across countries or regions?
 
 - **Dashboards / Queries:**  
-  *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*  
+  *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
+  '''sql
+SELECT
+    cu.country,
+    ge.genre_name,
+    SUM(il.line_amount) AS total_revenue
+FROM
+    group6_fact_line_invoice il
+JOIN group6_dim_track t ON il.track_key = t.track_id
+JOIN group6_dim_genre ge ON t.genre_id = ge.genre_id
+JOIN group6_dim_customer cu ON il.customer_key = cu.customer_id
+GROUP BY
+    cu.country,
+    ge.genre_name
+ORDER BY
+    cu.country,
+    total_revenue DESC;
 
 - **Key Insights:**  
   - Rock is the most profitable genre in the US with heavy margins compared to the others
