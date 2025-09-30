@@ -70,6 +70,7 @@
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
+Top Revenue by Genre per Country
   ```sql
   SELECT
     cu.country,
