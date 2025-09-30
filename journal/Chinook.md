@@ -70,19 +70,20 @@
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
-  ```sql SELECT
+  ```sql
+  SELECT
     cu.country,
     ge.genre_name,
     SUM(il.line_amount) AS total_revenue
-FROM
+  FROM
     group6_fact_line_invoice il
-JOIN group6_dim_track t ON il.track_key = t.track_id
-JOIN group6_dim_genre ge ON t.genre_id = ge.genre_id
-JOIN group6_dim_customer cu ON il.customer_key = cu.customer_id
-GROUP BY
+  JOIN group6_dim_track t ON il.track_key = t.track_id
+  JOIN group6_dim_genre ge ON t.genre_id = ge.genre_id
+  JOIN group6_dim_customer cu ON il.customer_key = cu.customer_id
+  GROUP BY
     cu.country,
     ge.genre_name
-ORDER BY
+  ORDER BY
     cu.country,
     total_revenue DESC;
   
