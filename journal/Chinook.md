@@ -31,6 +31,225 @@
   - **Silver (Clean):** Cleaning, type casting, handling missing values  
   - **Gold (Mart):** Business-ready star schema for BI  
 
+### Raw Layer: Data Ingestion
+
+- For the raw layer, tables from the Chinook sample database are ingested using `dlt`. This step brings in source tables for downstream processing.
+
+- **Example Extraction Code:**  
+  Extraction uses Python functions decorated with `@dlt.resource`. For example, with the naming convention update:
+
+```python
+import os
+import dlt
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+def get_connection():
+    host     = os.environ["POSTGRES_HOST"]
+    port     = int(os.environ["POSTGRES_PORT"])
+    user     = os.environ["POSTGRES_USER"]
+    password = os.environ["POSTGRES_PASSWORD"]
+    dbname   = os.environ["POSTGRES_DB"]
+
+    return psycopg2.connect(
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+        dbname=dbname
+    )
+
+@dlt.resource(write_disposition="append", name="artists")
+def artists():
+    """Extract all artists from the Chinook sample DB."""
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("SELECT * FROM artist;")
+    for row in cur.fetchall():
+        yield dict(row)
+    conn.close()
+
+def run():
+    pipeline = dlt.pipeline(
+        pipeline_name="chinook_pipeline",
+        destination="clickhouse",
+        dataset_name="chinook",
+        dev_mode=False
+    )
+    print("Fetching and loading...")
+
+    load_info = pipeline.run(artists())
+    print("records loaded:", load_info)
+
+if __name__ == "__main__":
+    run()
+```
+
+
+
+- **How Ingestion Was Run:**  
+The pipeline was executed in the terminal:
+
+```bash
+docker compose --profile jobs run --rm dlt python extract-loads/01-dlt-mpg-pipeline.py
+```
+
+
+**Tables Ingested:**  
+  - **genre**
+  - **media_type**
+  - **track**
+  - **playlist**
+  - **playlist_track**
+  - **invoice_line**
+  - **invoice**
+  - **customer**
+  - **employee**
+
+
+### Clean Layer: Data Transformation
+
+- After ingestion into the raw layer, each table is **cleaned and standardized** using `dbt`.  
+- Cleaning involves **casting types, renaming columns, and ensuring nullable fields are properly handled**.  
+- Models are materialized as **tables** in the `clean` schema (❗ originally these were materialized as `views`, but we switched them to `tables` for better performance and stability).  
+
+- **Example dbt Model (Albums):**
+
+```sql
+{{ config(materialized="table", schema="clean", tags=["staging","chinook"]) }}
+
+-- Keep album grain; standardize names/types.
+select
+  cast(album_id  as Nullable(Int64))      as album_id,
+  cast(title     as Nullable(String))     as album_title,
+  cast(artist_id as Nullable(Int64))      as artist_id
+from {{ source('raw', 'chinook___albums_group6') }}
+```
+
+**Note:**  
+  Each raw table has its own corresponding clean model (e.g., `artists`, `tracks`, `genres`, etc.), all following the same pattern:  
+  - Define `config()`  
+  - Cast columns to consistent types  
+  - Use `source()` to reference the raw schema
+
+
+### Mart Layer: Dimensional Modeling
+
+- After the **clean layer**, we created **dimension and fact tables** and stored them in the **mart**.  
+- This step converts the staging/cleaned data into a **star schema** ready for BI tools like Metabase.  
+
+- **Example Fact Table (Invoice Line):**
+
+```sql
+{{ config(materialized="table", schema="mart", tags=["mart","chinook"]) }}
+
+-- CTEs for base staging tables
+with invoice_lines as (
+  select
+    invoice_line_id,
+    invoice_id,
+    track_id,
+    unit_price,
+    quantity
+  from {{ ref('stg_group6_chinook___invoice_line') }}
+),
+invoices as (
+  select
+    invoice_id,
+    customer_id,
+    invoice_date,
+    billing_address,
+    billing_city,
+    billing_state,
+    billing_country,
+    billing_postal_code,
+    total
+  from {{ ref('stg_group6_chinook___invoice') }}
+),
+dim_customers as (
+  select
+    customer_id,
+    first_name,
+    last_name,
+    country
+  from {{ ref('group6_dim_customer') }}
+),
+dim_tracks as (
+  select
+    track_id,
+    track_name,
+    album_id,
+    genre_id,
+    media_type_id,
+    composer,
+    milliseconds,
+    bytes
+  from {{ ref('group6_dim_track') }}
+)
+
+-- Final fact_invoice_line model
+select
+    il.invoice_line_id          as invoice_line_key,
+    c.customer_id               as customer_key,  -- still natural key
+    t.track_id                  as track_key,     -- fix here
+    i.invoice_date              as invoice_date,
+    il.quantity                 as quantity,
+    il.unit_price               as unit_price,
+    il.unit_price * il.quantity as line_amount
+from {{ ref('stg_group6_chinook___invoice_line') }} il
+join {{ ref('stg_group6_chinook___invoice') }} i on il.invoice_id = i.invoice_id
+join {{ ref('group6_dim_customer') }} c on i.customer_id = c.customer_id
+join {{ ref('group6_dim_track') }} t on il.track_id = t.track_id
+```
+
+- **Example Dimension Table (Customer):**
+
+```sql
+{{ config(materialized="table", schema="mart", tags=["mart","chinook"]) }}
+
+-- Base staging customers
+with stg_customers as (
+  select
+    customer_id,
+    first_name,
+    last_name,
+    company,
+    address,
+    city,
+    state,
+    country,
+    postal_code,
+    phone,
+    email,
+    support_rep_id
+  from {{ ref('stg_angel_chinook___customer') }}
+)
+
+-- Dimension table
+select
+  customer_id             as customer_key,    -- still natural key, surrogate possible later
+  first_name,
+  last_name,
+  country,
+  city,
+  state,
+  email
+from stg_customers
+```
+
+- Transformation was executed via Docker with the following command:
+
+```bash
+ddocker compose --profile jobs run --rm \
+  -w /workdir/transforms/02_chinook \
+  dbt build --profiles-dir . --target remote
+```
+
+### Visualization Layer: Metabase
+
+- After building the **mart layer** (facts and dims), we connected the database to **Metabase**.  
+- Using Metabase, we **queried and visualized** the data to answer the defined **business questions** (e.g., revenue by genre, sales trends).  
+
 ---
 
 ## 3. Modeling Process 
