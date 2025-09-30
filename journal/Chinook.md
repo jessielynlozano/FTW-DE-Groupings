@@ -70,8 +70,7 @@
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
-  ```sql
-SELECT
+  ```sql SELECT
     cu.country,
     ge.genre_name,
     SUM(il.line_amount) AS total_revenue
