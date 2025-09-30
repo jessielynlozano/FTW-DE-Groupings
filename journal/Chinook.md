@@ -70,7 +70,7 @@
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
-  '''sql
+  ```sql
 SELECT
     cu.country,
     ge.genre_name,
