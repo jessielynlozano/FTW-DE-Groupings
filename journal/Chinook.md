@@ -47,48 +47,53 @@
 ## 4. Collaboration & Setup - Monette
 
 - **Task Splitting:**  
-  *(How the team divided ingestion, modeling, BI dashboards, documentation.)*  
+  - One person is assigned for ingestion, cleaning, until pushing to mart
+  - Each one took a business question to visualize and query using metabase
+  - Each one collaborates in creating the documentation
 
 - **Shared vs Local Work:**  
-  *(Issues faced with sync conflicts, version control, DB connections, etc.)*  
+  - Server went down and since we were doing things the last minute, that has also affected our workflow greatly 
 
 - **Best Practices Learned:**  
-  *(E.g., using Git for dbt projects, naming conventions, documenting assumptions, group debugging sessions.)*  
+  - Learn how to collaborate 
 
 ---
 
 ## 5. Business Questions & Insights
 
 - **Business Questions Explored:**  
-  1. *(Example: Who are the top customers by revenue?)*  
-  2. *(Example: What factors contribute to student dropout?)*  
-  3. *(Example: Which genres/actors perform best in ratings?)*  
+  1. Which music genres generate the most revenue in each country?
+  2. How many customers fall into each tier - high, medium, low? 
+  3. How has revenue trended month-by-month over the last 2 years?
+  4. What are the top 20 tracks by total units sold, and which albums/artists do they belong to?
+  5. Do average unit prices differ across countries or regions?
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*  
 
 - **Key Insights:**  
-  - *(Highlight 1–2 interesting findings. Example: “Rock was the top genre in North America, while Latin genres dominated in South America.”)*  
+  - Rock is the most profitable genre in the US with heavy margins compared to the others
+  - 
 
 ---
 
 ## 6. Key Learnings
 
 - **Technical Learnings:**  
-  *(E.g., SQL joins, window functions, dbt builds/tests, schema design.)*  
+  - Creating Fact and Dim table using SQL
 
 - **Team Learnings:**  
-  *(E.g., collaboration in shared environments, version control, importance of documentation.)*  
+  - Collaborating using remote setup
 
 - **Real-World Connection:**  
-  *(How this exercise relates to actual data engineering workflows in industry.)*  
+  - The exercise showed how it is possible for data engineers to connect and collaborate with each other.
 
 ---
 
 ## 7. Future Improvements
 
-- **Next Steps with More Time:**  
-  *(E.g., add orchestration with Airflow/Prefect, implement testing, optimize queries, handle larger datasets.)*  
+- **Next Steps with More Time:**
+  - Each one of use would try it out and we would present with each other how we did the exercise.
 
 - **Generalization:**  
   *(How this workflow could be applied to other datasets or business domains.)*  
