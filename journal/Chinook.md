@@ -116,17 +116,3 @@ Top Revenue by Genre per Country
 
 - **Generalization:**  
   *(How this workflow could be applied to other datasets or business domains.)*  
-
----
-
-## 📢 Presentation Tips
-
-- Keep it **5–10 minutes**, like a project walkthrough.  
-- Use **diagrams, screenshots, and SQL snippets**.  
-- Focus on both **technical process** and **business insights**.  
-- End with your **key learnings and future improvements**.  
-- For other documentation tips. Read [this](TECHNICAL-DOCS.md).
-
----
-
-✅ By filling this template, your group will produce a professional-style project guide **just like real data engineers** — clear, structured, and insight-driven.
