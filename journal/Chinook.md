@@ -91,7 +91,7 @@ Top Revenue by Genre per Country
 
 - **Key Insights:**  
   - Rock is the most profitable genre in the US with heavy margins compared to the others
-  - 
+  - The customers fall in mid tier only
 
 ---
 
@@ -102,6 +102,7 @@ Top Revenue by Genre per Country
 
 - **Team Learnings:**  
   - Collaborating using remote setup
+  - Proper assignment of tasks to prevent backlogs
 
 - **Real-World Connection:**  
   - The exercise showed how it is possible for data engineers to connect and collaborate with each other.
