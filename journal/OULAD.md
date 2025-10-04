@@ -145,6 +145,7 @@ def run_approach_1():
         pipeline_name=""oulad-pipeline"",
         destination=""clickhouse"",
         dataset_name=""monette_oulad"",
+        dev_mode=True
     )
     print(""Fetching and loading all files as one resource..."")
     info = p.run(oulad_all_files())
