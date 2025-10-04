@@ -356,7 +356,7 @@ ddocker compose --profile jobs run --rm \
 ### Visualization Layer: Metabase
 
 - After building the **mart layer** (facts and dims), we connected the database to **Metabase**.  
-- Using Metabase, we **queried and visualized** the data to answer the defined **business questions** (e.g., revenue by genre, sales trends).  
+- Using Metabase, we **queried and visualized** the data to answer the defined **business questions** (e.g., gender engagement and VLE).  
 
 ---
 
@@ -367,23 +367,28 @@ ddocker compose --profile jobs run --rm \
  
 
 - **Challenges / Tradeoffs:**  
-  - Repeating tables due to **append** 
+- Identifying which data should be placed in the fact and dimension tables (e.g., two possible data sources: student VLE and assessment).
+- Same number of rows but different file sizes (raw vs. sandbox).
+- Created a table in sandbox, but it shows up empty.
+- During cleaning, the same SQL script produced different results: one member ran it successfully, while another encountered an error.
 
 ---
 
-## 4. Collaboration & Setup - Monette
+## 4. Collaboration & Setup 
 
 - **Task Splitting:**  
-  - One person is assigned for ingestion, cleaning, until pushing to mart
-  - Each one took a business question to visualize and query using metabase
-  - Each one collaborates in creating the documentation
-
+- Each member individually performed the data ingestion and cleaning tasks to ensure consistency and validate the process across different environments.
+- The team met to compare data outputs and SQL queries across the cleaned tables to ensure consistency.
+- Collaborated to create a single source of truth through the fact and dimension tables.
+  
 - **Shared vs Local Work:**  
   - Server went down and since we were doing things the last minute, that has also affected our workflow greatly 
 
 - **Best Practices Learned:**  
-  - Learn how to collaborate 
-
+  - Comparing queries and data
+  - Unit Tests for Pipelines
+  - Maintain a single source of truth to avoid duplication and inconsistency.
+    
 ---
 
 ## 5. Business Questions & Insights
@@ -397,23 +402,23 @@ ddocker compose --profile jobs run --rm \
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
-Top Revenue by Genre per Country
-  ```sql
-  SELECT
-    cu.country,
-    ge.genre_name,
-    SUM(il.line_amount) AS total_revenue
-  FROM
-    group6_fact_line_invoice il
-  JOIN group6_dim_track t ON il.track_key = t.track_id
-  JOIN group6_dim_genre ge ON t.genre_id = ge.genre_id
-  JOIN group6_dim_customer cu ON il.customer_key = cu.customer_id
-  GROUP BY
-    cu.country,
-    ge.genre_name
-  ORDER BY
-    cu.country,
-    total_revenue DESC;
+1. Sample dbt script: assessment -
+{{ config(materialized="table", schema="clean", tags=["staging","oulad"]) }}
+
+-- Standardize column names/types per table; no business logic.
+select
+    CAST(code_module AS Nullable(Varchar(45)))            AS code_module,
+    CAST(code_presentation AS Nullable(Varchar(45)))      AS code_presentation,
+    CAST(id_assessment AS Nullable(Int64))                  AS id_assessment,
+    CAST(assessment_type  AS Nullable(Varchar(45)))      AS assessment_type,
+    CAST(date AS Nullable(Int64))      AS date,
+    CAST(weight AS Nullable(Float64)) AS weight
+
+from {{ source('raw', 'monette_oulad___assessments') }}
+
+2. Sample slq script- fact_assessment
+   
+4. 
   
 
 - **Key Insights:**  
