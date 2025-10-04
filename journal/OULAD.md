@@ -7,13 +7,22 @@
 - **Dataset Used:**  
   Dataset: Open University Learning Analytics dataset
 
-  Domain:artists, albums, tracks, genres, playlist, media type, customer, employee, invoice, invoice line
+  Domain: VLE, Student VLE, Student Registration, Student Info, Student Assessment, Courses, Assessments
 
 - **Goal of the Exercise:**  
-  Convert the Chinook dataset into a dimensional model to answer business questions. After creating the schema, do the RCM pipeline.
+  1. Ingest CSVs into the `raw` schema.
+  2. Standardize types, handle missing values in the `clean` schema.
+  3. Design a star schema around **student performance & engagement**:
+   * **Facts:** `FactAssessments`, `FactVLEInteractions`.
+   * **Dimensions:** module, moduleVLE, presentation, registered module, student, date
+  4. Implement in dbt (`mart` schema).
+  5. Build dashboards in Metabase to analyze **cohorts, dropout risk, and engagement**.
 
 - **Team Setup:**  
-  *(State if you worked individually, as a group, or both. Mention collaboration style.)*  
+  1. We createad a monitoring sheet to monitor each one trying the task. (Link: https://docs.google.com/spreadsheets/d/1VOidsWkT1EnYQ2q9agZKiv-X-Abc_UGZ/edit?gid=504770803#gid=504770803)
+  2. Each one tries to ingest and clean the data.
+  3. We huddled to combine what we have done alone and then created the fact and dimension tables using one source of truth
+  4. Each one input a code in Metabase to visualize answers to business questions.
 
 ---
 
@@ -33,56 +42,154 @@
 
 ### Raw Layer: Data Ingestion
 
-- For the raw layer, tables from the Chinook sample database are ingested using `dlt`. This step brings in source tables for downstream processing.
+- For the raw layer, tables from OULAD e are ingested using `dlt`. This step brings in source tables for downstream processing.
 
 - **Example Extraction Code:**  
   Extraction uses Python functions decorated with `@dlt.resource`. For example, with the naming convention update:
 
 ```python
+"# dlt/pipeline.py
+import dlt, pandas as pd
 import os
-import dlt
-import psycopg2
-from psycopg2.extras import RealDictCursor
+from glob import glob
 
-def get_connection():
-    host     = os.environ["POSTGRES_HOST"]
-    port     = int(os.environ["POSTGRES_PORT"])
-    user     = os.environ["POSTGRES_USER"]
-    password = os.environ["POSTGRES_PASSWORD"]
-    dbname   = os.environ["POSTGRES_DB"]
+# Approach 1: Single resource yielding multiple DataFrames
+@dlt.resource(name=""monette_oulad"")
+def oulad_all_files():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    
+    # List all your CSV files
+    csv_files = [
+        ""assessments.csv"",
+        ""courses.csv"", 
+        ""studentAssessment.csv"",
+        ""studentInfo.csv"",
+        ""studentRegistration.csv"",
+        ""vle.csv""
+    ]
+    
+    for csv_file in csv_files:
+        file_path = os.path.join(STAGING_DIR, csv_file)
+        if os.path.exists(file_path):
+            df = pd.read_csv(file_path)
+            # Add a column to identify the source file
+            df['_source_file'] = csv_file.replace('.csv', '')
+            yield df
+        else:
+            print(f""Warning: File {csv_file} not found"")
 
-    return psycopg2.connect(
-        host=host,
-        port=port,
-        user=user,
-        password=password,
-        dbname=dbname
+# Approach 2: Separate resources for each file
+@dlt.resource(name=""assessments"")
+def assessments():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    FILE_PATH = os.path.join(STAGING_DIR, ""assessments.csv"")
+    yield pd.read_csv(FILE_PATH)
+
+@dlt.resource(name=""courses"")
+def courses():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    FILE_PATH = os.path.join(STAGING_DIR, ""courses.csv"")
+    yield pd.read_csv(FILE_PATH)
+
+@dlt.resource(name=""student_assessment"")
+def student_assessment():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    FILE_PATH = os.path.join(STAGING_DIR, ""studentAssessment.csv"")
+    yield pd.read_csv(FILE_PATH)
+
+@dlt.resource(name=""student_info"")
+def student_info():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    FILE_PATH = os.path.join(STAGING_DIR, ""studentInfo.csv"")
+    yield pd.read_csv(FILE_PATH)
+
+@dlt.resource(name=""student_registration"")
+def student_registration():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    FILE_PATH = os.path.join(STAGING_DIR, ""studentRegistration.csv"")
+    yield pd.read_csv(FILE_PATH)
+    
+@dlt.resource(name=""vle"")
+def vle():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    FILE_PATH = os.path.join(STAGING_DIR, ""vle.csv"")
+    yield pd.read_csv(FILE_PATH)
+
+# Approach 3: Dynamic file discovery
+@dlt.resource(name=""oulad_dynamic"")
+def oulad_dynamic():
+    ROOT_DIR = os.path.dirname(__file__)
+    STAGING_DIR = os.path.join(ROOT_DIR, ""staging"", ""oulad"")
+    
+    # Find all CSV files in the directory
+    csv_pattern = os.path.join(STAGING_DIR, ""*.csv"")
+    csv_files = glob(csv_pattern)
+    
+    for file_path in csv_files:
+        df = pd.read_csv(file_path)
+        # Add source file information
+        filename = os.path.basename(file_path).replace('.csv', '')
+        df['_source_file'] = filename
+        yield df
+
+def run_approach_1():
+    """"""Single resource, all files combined""""""
+    p = dlt.pipeline(
+        pipeline_name=""oulad-pipeline"",
+        destination=""clickhouse"",
+        dataset_name=""monette_oulad"",
     )
+    print(""Fetching and loading all files as one resource..."")
+    info = p.run(oulad_all_files())
+    print(""Records loaded:"", info)
 
-@dlt.resource(write_disposition="append", name="artists")
-def artists():
-    """Extract all artists from the Chinook sample DB."""
-    conn = get_connection()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("SELECT * FROM artist;")
-    for row in cur.fetchall():
-        yield dict(row)
-    conn.close()
-
-def run():
-    pipeline = dlt.pipeline(
-        pipeline_name="chinook_pipeline",
-        destination="clickhouse",
-        dataset_name="chinook",
-        dev_mode=False
+def run_approach_2():
+    """"""Separate resources for each file""""""
+    p = dlt.pipeline(
+        pipeline_name=""oulad-pipeline"",
+        destination=""clickhouse"",
+        dataset_name=""monette_oulad"",
     )
-    print("Fetching and loading...")
+    print(""Fetching and loading each file as separate resource..."")
+    info = p.run([
+        assessments(),
+        courses(),
+        student_assessment(),
+        student_info(),
+        student_registration(),
+        vle()
+    ])
+    print(""Records loaded:"", info)
 
-    load_info = pipeline.run(artists())
-    print("records loaded:", load_info)
+def run_approach_3():
+    """"""Dynamic file discovery""""""
+    p = dlt.pipeline(
+        pipeline_name=""oulad-pipeline"",
+        destination=""clickhouse"",
+        dataset_name=""monette_oulad"",
+    )
+    print(""Fetching and loading dynamically discovered files..."")
+    info = p.run(oulad_dynamic())
+    print(""Records loaded:"", info)
 
-if __name__ == "__main__":
-    run()
+if __name__ == ""__main__"":
+    # Choose which approach to use:
+    
+    # Option 1: All files as one resource (creates one table)
+    # run_approach_1()
+    
+    # Option 2: Each file as separate resource (creates separate tables)
+    run_approach_2()
+    
+    # Option 3: Dynamic discovery (creates one table with source file column)
+    # run_approach_3()"
 ```
 
 
