@@ -418,15 +418,13 @@ select
 
 from {{ source('raw', 'monette_oulad___assessments') }}
 ```
-
-2. Sample slq script- fact_assessment
-   
-4. 
   
 
 - **Key Insights:**  
-  - Rock is the most profitable genre in the US with heavy margins compared to the others
-  - The customers fall in mid tier only
+  - Most students are coming from 0-35 age group
+  - Age does not necessarily dictates final assessment score
+  - Males tend to use VLEs more than women
+  - FFF is consistently has the highest VLE engagement
 
 ---
 
@@ -434,6 +432,7 @@ from {{ source('raw', 'monette_oulad___assessments') }}
 
 - **Technical Learnings:**  
   - Creating Fact and Dim table using SQL
+  - Ingesting data from local CSVs which means creating and editing python script
 
 - **Team Learnings:**  
   - Collaborating using remote setup
