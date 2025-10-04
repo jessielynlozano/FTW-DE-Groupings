@@ -402,7 +402,9 @@ ddocker compose --profile jobs run --rm \
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
-1. Sample dbt script: assessment -
+1. Sample dbt script:
+```sql
+assessment -
 {{ config(materialized="table", schema="clean", tags=["staging","oulad"]) }}
 
 -- Standardize column names/types per table; no business logic.
@@ -415,6 +417,7 @@ select
     CAST(weight AS Nullable(Float64)) AS weight
 
 from {{ source('raw', 'monette_oulad___assessments') }}
+```
 
 2. Sample slq script- fact_assessment
    
