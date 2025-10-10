@@ -363,7 +363,38 @@ ddocker compose --profile jobs run --rm \
 ## 3. Modeling Process 
 
 - **Star Schema Design:**  
-![Schema](../assets/chinook_schema.png)
+erDiagram
+  FACT_ASSESSMENT {
+    int assessment_fact_key PK
+    int student_key FK
+    int module_presentation_key FK
+    int date_key FK
+    decimal score
+    string passed_flag
+  }
+
+  FACT_VLE_INTERACTIONS {
+    int vle_fact_key PK
+    int student_key FK
+    int module_presentation_key FK
+    int date_key FK
+    int clicks
+  }
+
+  DIM_STUDENT { int student_key PK string gender string age_band string region }
+  DIM_MODULE { int module_key PK string module_code string module_name }
+  DIM_PRESENTATION { int module_presentation_key PK int module_key string presentation_code }
+  DIM_DATE { int date_key PK date calendar_date }
+
+  FACT_ASSESSMENT }o--|| DIM_STUDENT : student_key
+  FACT_ASSESSMENT }o--|| DIM_PRESENTATION : module_presentation_key
+  FACT_ASSESSMENT }o--|| DIM_DATE : date_key
+
+  FACT_VLE_INTERACTIONS }o--|| DIM_STUDENT : student_key
+  FACT_VLE_INTERACTIONS }o--|| DIM_PRESENTATION : module_presentation_key
+  FACT_VLE_INTERACTIONS }o--|| DIM_DATE : date_key
+
+  DIM_PRESENTATION }o--|| DIM_MODULE : module_key
 
 - **Challenges / Tradeoffs:**  
 - Identifying which data should be placed in the fact and dimension tables (e.g., two possible data sources: student VLE and assessment).
