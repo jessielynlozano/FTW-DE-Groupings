@@ -1,34 +1,41 @@
-# 📝 Beginner Data Engineer Documentation & Presentation Guide
+# 🛒 InstaCart Online Grocery Basket dataset
 
-This guide is for documenting and presenting your group’s **dimensional modeling exercise**.  
-Follow the structure below, fill in your team’s work, and use it as both internal documentation and a final presentation outline.  
+This repository contains an end-to-end data pipeline built around the **InstaCart Online Grocery Basket dataset**, a real-world dataset that captures customer purchasing behavior across thousands of grocery orders.
 
 ---
 
 ## 1. Project Overview
 
 - **Dataset Used:**  
-  - Instacart Market Basket Dataset
+  - InstaCart Online Grocery Basket Analysis Dataset
 
 - **Goal of the Exercise:**  
   - Develop a business question, Apply Normalization → Dimensional Modeling → Data Quality Dashboard using the Instacart Market Basket dataset.
 
 - **Team Setup:**  
-  - Worked as a group
+  - The team collaborated by dividing responsibilities across data modeling, dashboard development, data quality testing, and documentation. Workloads were adjusted according to each member’s availability. 
 
 - **Environment Setup:**  
-  - Docker containers on a shared VM + local laptops.) 
+  - Docker containers ran on a shared VM and local laptops, ensuring consistent and collaborative development.
 
 ---
 
 ## 2. Architecture & Workflow
 
-- **Pipeline Flow:**  
-  *(Diagram or describe: raw → clean → mart → BI.)*  
+- **Pipeline Flow:**
+  ```mermaid
+graph LR
+    A[dlt ingestion] --> B[ClickHouse - raw schema]
+    B --> C[dbt - clean schema]
+    C --> F[Data quality testing]
+    F --> D[dbt - mart schema]
+    D --> E[Metabase dashboards]
+```
 
 - **Tools Used:**  
   - Ingestion: `dlt`  
-  - Modeling: `dbt`  
+  - Modeling: `dbt`
+  - Data Quality: 
   - Visualization: `Metabase`  
   *(Add others if used.)*  
 
@@ -36,8 +43,7 @@ Follow the structure below, fill in your team’s work, and use it as both inter
   - **Bronze (Raw):** Initial ingestion of source data  
   - **Silver (Clean):** Cleaning, type casting, handling missing values  
   - **Gold (Mart):** Business-ready star schema for BI  
-
-*(Insert diagram or screenshot here if possible.)*  
+ 
 
 ---
 
