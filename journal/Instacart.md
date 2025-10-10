@@ -8,16 +8,16 @@ Follow the structure below, fill in your team’s work, and use it as both inter
 ## 1. Project Overview
 
 - **Dataset Used:**  
-  *(Briefly describe the dataset and domain — e.g., Chinook music store, OULAD education dataset, or IMDb entertainment dataset.)*  
+  - Instacart Market Basket Dataset
 
 - **Goal of the Exercise:**  
-  *(What was the objective? Example: transform OLTP schema into dimensional star schema for analytics.)*  
+  - Develop a business question, Apply Normalization → Dimensional Modeling → Data Quality Dashboard using the Instacart Market Basket dataset.
 
 - **Team Setup:**  
-  *(State if you worked individually, as a group, or both. Mention collaboration style.)*  
+  - Worked as a group
 
 - **Environment Setup:**  
-  *(Describe your environment — local vs remote, individual vs shared instances. Example: Docker containers on a shared VM + local laptops.)*  
+  - Docker containers on a shared VM + local laptops.) 
 
 ---
 
