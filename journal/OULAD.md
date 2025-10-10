@@ -191,6 +191,49 @@ if __name__ == ""__main__"":
     
     # Option 3: Dynamic discovery (creates one table with source file column)
     # run_approach_3()"
+# Approach 4
+import dlt
+import pandas as pd
+import os
+ROOT_DIR = os.path.dirname(__file__)
+STAGING_DIR = os.path.join(ROOT_DIR, "staging", "oulad")
+def resource_from_file(name, filename):
+    """
+    Loads a single CSV as a DataFrame for dlt, table named pau_{name}.
+    """
+    @dlt.resource(name=f"pau_{name}")
+    def resource():
+        file_path = os.path.join(STAGING_DIR, filename)
+        return iter([pd.read_csv(file_path)])
+    return resource
+# Use the prefix 'pau_' for each resource/table name (matching dbt)
+assessments = resource_from_file("assessments", "assessments.csv")
+courses = resource_from_file("courses", "courses.csv")
+student_assessment = resource_from_file("student_assessment", "studentAssessment.csv")
+student_info = resource_from_file("student_info", "studentInfo.csv")
+student_registration = resource_from_file("student_registration", "studentRegistration.csv")
+vle = resource_from_file("vle", "vle.csv")
+def run_pipeline():
+    """
+    Loads each CSV file into a separate table in the 'raw' schema, named pau_*.
+    """
+    p = dlt.pipeline(
+        pipeline_name="oulad-pipeline",
+        destination="clickhouse",
+        dataset_name="raw",   # <-- schema must match dbt
+    )
+    print("Loading files as pau_* tables into raw schema...")
+    info = p.run([
+        assessments(),
+        courses(),
+        student_assessment(),
+        student_info(),
+        student_registration(),
+        vle()
+    ])
+    print("Records loaded:", info)
+if __name__ == "__main__":
+    run_pipeline()
 ```
 
 
