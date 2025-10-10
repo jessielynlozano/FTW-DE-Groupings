@@ -37,7 +37,6 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
   - Modeling: `dbt`
   - Data Quality: 
   - Visualization: `Metabase`  
-  *(Add others if used.)*  
 
 - **Medallion Architecture Application:**  
   - **Bronze (Raw):** Initial ingestion of source data  
