@@ -522,21 +522,17 @@ erDiagram
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
-1. Sample dbt script:
+1. Sample SQL script:
 ```sql
-assessment -
-{{ config(materialized="table", schema="clean", tags=["staging","oulad"]) }}
-
--- Standardize column names/types per table; no business logic.
-select
-    CAST(code_module AS Nullable(Varchar(45)))            AS code_module,
-    CAST(code_presentation AS Nullable(Varchar(45)))      AS code_presentation,
-    CAST(id_assessment AS Nullable(Int64))                  AS id_assessment,
-    CAST(assessment_type  AS Nullable(Varchar(45)))      AS assessment_type,
-    CAST(date AS Nullable(Int64))      AS date,
-    CAST(weight AS Nullable(Float64)) AS weight
-
-from {{ source('raw', 'monette_oulad___assessments') }}
+SELECT
+    s.region,
+    f.final_result,
+    COUNT(*) AS student_count
+FROM group6_oulad_fact_assessment f
+JOIN group6_oulad_dim_student s
+    ON f.student_key = s.student_key
+GROUP BY s.region, f.final_result
+ORDER BY s.region, f.final_result;
 ```
   
 
