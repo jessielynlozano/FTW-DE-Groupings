@@ -222,14 +222,23 @@ docker compose --profile jobs run --rm dlt python extract-loads/09-dlt-oulad-pip
 - **Example dbt Model (Albums):**
 
 ```sql
-{{ config(materialized="table", schema="clean", tags=["staging","chinook"]) }}
+"-- Step 1: Create the table
+CREATE TABLE sandbox.monette_oulad___courses
+(
+    code_module String,
+    code_presentation String,
+    module_presentation_length Int64
+)
+ENGINE = MergeTree
+ORDER BY code_module;  -- you must define ORDER BY for MergeTree
 
--- Keep album grain; standardize names/types.
-select
-  cast(album_id  as Nullable(Int64))      as album_id,
-  cast(title     as Nullable(String))     as album_title,
-  cast(artist_id as Nullable(Int64))      as artist_id
-from {{ source('raw', 'chinook___albums_group6') }}
+-- Step 2: Insert data from the raw table
+INSERT INTO sandbox.monette_oulad___courses
+SELECT
+    code_module,
+    code_presentation,
+    module_presentation_length
+FROM raw.monette_oulad___courses;"
 ```
 
 **Note:**  
@@ -244,103 +253,160 @@ from {{ source('raw', 'chinook___albums_group6') }}
 - After the **clean layer**, we created **dimension and fact tables** and stored them in the **mart**.  
 - This step converts the staging/cleaned data into a **star schema** ready for BI tools like Metabase.  
 
-- **Example Fact Table (Invoice Line):**
+- **Example Fact Table and Dim Table:**
 
 ```sql
-{{ config(materialized="table", schema="mart", tags=["mart","chinook"]) }}
+"--Code Presentation
+SELECT
+    code_module,
+    code_presentation,
+    left(code_presentation, 4) AS year,
+    CASE right(code_presentation, 1)
+        WHEN 'J' THEN 'October'
+        WHEN 'B' THEN 'February'
+        ELSE 'Unknown'
+    END AS semester_start,
+    module_presentation_length
+FROM sandbox.monette_oulad___courses;
 
--- CTEs for base staging tables
-with invoice_lines as (
-  select
-    invoice_line_id,
-    invoice_id,
-    track_id,
-    unit_price,
-    quantity
-  from {{ ref('stg_group6_chinook___invoice_line') }}
-),
-invoices as (
-  select
-    invoice_id,
-    customer_id,
-    invoice_date,
-    billing_address,
-    billing_city,
-    billing_state,
-    billing_country,
-    billing_postal_code,
-    total
-  from {{ ref('stg_group6_chinook___invoice') }}
-),
-dim_customers as (
-  select
-    customer_id,
-    first_name,
-    last_name,
-    country
-  from {{ ref('group6_dim_customer') }}
-),
-dim_tracks as (
-  select
-    track_id,
-    track_name,
-    album_id,
-    genre_id,
-    media_type_id,
-    composer,
-    milliseconds,
-    bytes
-  from {{ ref('group6_dim_track') }}
+-- DIM_STUDENT
+CREATE TABLE mart.group6_oulad_dim_student (
+    student_key Int32,
+    gender String,
+    age_band String,
+    region String
+) ENGINE = MergeTree() ORDER BY student_key;
+
+INSERT INTO mart.group6_oulad_dim_student (student_key, gender, age_band, region)
+SELECT id_student, gender, age_band, region
+FROM clean.monette_oulad_student_info;
+
+-- DIM_MODULE
+CREATE TABLE mart.group6_oulad_dim_module_vle (
+    module_key String,
+    presentation_code String,
+    activity_type String,
+    year String,
+    semester_start String
+) ENGINE = MergeTree() ORDER BY module_key;
+
+INSERT INTO mart.group6_oulad_dim_module_vle (
+    module_key, presentation_code, activity_type, year, semester_start
 )
+SELECT DISTINCT
+    code_module AS module_key,
+    code_presentation AS presentation_code,
+    activity_type,
+    left(code_presentation, 4) AS year,
+    CASE right(code_presentation, 1)
+        WHEN 'J' THEN 'October'
+        WHEN 'B' THEN 'February'
+        ELSE 'Unknown'
+    END AS semester_start
+FROM clean.monette_oulad_vle;
 
--- Final fact_invoice_line model
-select
-    il.invoice_line_id          as invoice_line_key,
-    c.customer_id               as customer_key,  -- still natural key
-    t.track_id                  as track_key,     -- fix here
-    i.invoice_date              as invoice_date,
-    il.quantity                 as quantity,
-    il.unit_price               as unit_price,
-    il.unit_price * il.quantity as line_amount
-from {{ ref('stg_group6_chinook___invoice_line') }} il
-join {{ ref('stg_group6_chinook___invoice') }} i on il.invoice_id = i.invoice_id
-join {{ ref('group6_dim_customer') }} c on i.customer_id = c.customer_id
-join {{ ref('group6_dim_track') }} t on il.track_id = t.track_id
-```
 
-- **Example Dimension Table (Customer):**
 
-```sql
-{{ config(materialized="table", schema="mart", tags=["mart","chinook"]) }}
+-- DIM Presentation; Add year and semester details to your dim_presentation using code_presentation
+CREATE TABLE mart.group6_oulad_dim_presentation (
+    module_presentation_key String,
+    module_key String,
+    presentation_code String,
+    year String,
+    semester_start String
+) ENGINE = MergeTree() ORDER BY module_presentation_key;
 
--- Base staging customers
-with stg_customers as (
-  select
-    customer_id,
-    first_name,
-    last_name,
-    company,
-    address,
-    city,
-    state,
-    country,
-    postal_code,
-    phone,
-    email,
-    support_rep_id
-  from {{ ref('stg_angel_chinook___customer') }}
+INSERT INTO mart.group6_oulad_dim_presentation (
+    module_presentation_key,
+    module_key,
+    presentation_code,
+    year,
+    semester_start
 )
+SELECT
+    concat(code_module, '_', code_presentation) AS module_presentation_key,
+    code_module,
+    code_presentation,
+    left(code_presentation, 4) AS year,
+    CASE right(code_presentation, 1)
+        WHEN 'J' THEN 'October'
+        WHEN 'B' THEN 'February'
+        ELSE 'Unknown'
+    END AS semester_start
+FROM clean.monette_oulad_courses;
 
--- Dimension table
-select
-  customer_id             as customer_key,    -- still natural key, surrogate possible later
-  first_name,
-  last_name,
-  country,
-  city,
-  state,
-  email
-from stg_customers
+
+-- DIM_DATE
+CREATE TABLE mart.group6_ouland_dim_date (
+    date_key Int64,
+    calendar_date String
+) ENGINE = MergeTree() ORDER BY date_key;
+
+INSERT INTO mart.group6_ouland_dim_date (date_key, calendar_date)
+SELECT DISTINCT date, cast(date AS String)
+FROM clean.monette_oulad_assessment
+WHERE date IS NOT NULL;
+
+-- Create DIM_MODULE based on registration periods
+CREATE TABLE mart.group6_ouland_dim_registered_module (
+    module_presentation_key String,
+    module_key String,
+    presentation_code String,
+    registration_start Int64,
+    registration_end Int64
+) ENGINE = MergeTree() ORDER BY module_presentation_key;
+
+INSERT INTO mart.group6_ouland_dim_registered_module (
+    module_presentation_key, module_key, presentation_code, registration_start, registration_end
+)
+SELECT
+    concat(code_module, '_', code_presentation) AS module_presentation_key,
+    code_module,
+    code_presentation,
+    min(date_registration) AS registration_start,
+    max(date_unregistration) AS registration_end
+FROM clean.monette_oulad_student_registration
+GROUP BY code_module, code_presentation;
+
+
+
+-- FACT ASSESSMENT
+CREATE TABLE mart.group6_ouland_fact_assessment (
+    assessment_fact_key Int64,
+    student_key Int64,
+    module_presentation_key String,
+    date_key Int64,
+    score Float64,
+    passed_flag String
+) ENGINE = MergeTree() ORDER BY assessment_fact_key;
+
+INSERT INTO mart.group6_ouland_fact_assessment (
+    assessment_fact_key, student_key, module_presentation_key, date_key, score, passed_flag
+)
+SELECT a.id_assessment, s.id_student,
+       concat(a.code_module, '_', a.code_presentation),
+       a.date, s.score,
+       IF(s.score >= 40, 'Y', 'N') AS passed_flag
+FROM clean.monette_oulad_student_assessment s
+JOIN clean.monette_oulad_assessment a ON s.id_assessment = a.id_assessment;
+
+-- FACT VLE INTERACTIONS
+CREATE TABLE mart.group6_ouland_fact_vle_interactions (
+    vle_fact_key Int32,
+    student_key Int32,
+    module_presentation_key String,
+    date_key Int32,
+    clicks Int32
+) ENGINE = MergeTree() ORDER BY vle_fact_key;
+
+INSERT INTO mart.group6_ouland_fact_vle_interactions (
+    vle_fact_key, student_key, module_presentation_key, date_key, clicks
+)
+SELECT id_site, id_student,
+       concat(code_module, '_', code_presentation),
+       date, sum_click
+FROM clean.monette_oulad_studentvle;
+"
 ```
 
 - Transformation was executed via Docker with the following command:
