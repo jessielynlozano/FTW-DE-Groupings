@@ -364,6 +364,35 @@ ddocker compose --profile jobs run --rm \
 
 - **Star Schema Design:**  
 ![Schema](../assets/chinook_schema.png)
+
+```mermaid
+erDiagram
+    USERS {
+        int id PK
+        string name
+        string email
+    }
+    ORDERS {
+        int id PK
+        int user_id FK
+        date order_date
+        float amount
+    }
+    PRODUCTS {
+        int id PK
+        string name
+        float price
+    }
+    ORDER_ITEMS {
+        int order_id FK
+        int product_id FK
+        int quantity
+    }
+
+    USERS ||--o{ ORDERS : places
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : listed_in
+
  
 
 - **Challenges / Tradeoffs:**  
