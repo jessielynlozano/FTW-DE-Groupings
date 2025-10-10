@@ -24,13 +24,13 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 
 - **Pipeline Flow:**
   ```mermaid
-graph LR
-    A[dlt ingestion] --> B[ClickHouse - raw schema]
-    B --> C[dbt - clean schema]
-    C --> F[Data quality testing]
-    F --> D[dbt - mart schema]
-    D --> E[Metabase dashboards]
-```
+    graph LR
+        A[dlt ingestion] --> B[ClickHouse - raw schema]
+        B --> C[dbt - clean schema]
+        C --> F[Data quality testing]
+        F --> D[dbt - mart schema]
+        D --> E[Metabase dashboards]
+  ```
 
 - **Tools Used:**  
   - Ingestion: `dlt`  
