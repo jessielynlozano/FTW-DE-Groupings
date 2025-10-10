@@ -413,7 +413,6 @@ erDiagram
   }
 
   FACT_ASSESSMENT }o--|| DIM_STUDENT : "student_key"
-  FACT_ASSESSMENT }o--|| DIM_PRESENTATION : "module_presentation_key"
   FACT_ASSESSMENT }o--|| DIM_DATE : "date_key"
 
   FACT_VLE_INTERACTIONS }o--|| DIM_STUDENT : "student_key"
