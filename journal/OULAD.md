@@ -199,20 +199,18 @@ if __name__ == ""__main__"":
 The pipeline was executed in the terminal:
 
 ```bash
-docker compose --profile jobs run --rm dlt python extract-loads/01-dlt-mpg-pipeline.py
+docker compose --profile jobs run --rm dlt python extract-loads/09-dlt-oulad-pipeline.py
 ```
 
 
 **Tables Ingested:**  
-  - **genre**
-  - **media_type**
-  - **track**
-  - **playlist**
-  - **playlist_track**
-  - **invoice_line**
-  - **invoice**
-  - **customer**
-  - **employee**
+  - **vle**
+  - **studentRegistration**
+  - **studentInfo**
+  - **studentAssessment**
+  - **courses**
+  - **assessments**
+  - studentVLE is ingested by Sir Myk
 
 
 ### Clean Layer: Data Transformation
@@ -241,7 +239,7 @@ from {{ source('raw', 'chinook___albums_group6') }}
   - Use `source()` to reference the raw schema
 
 
-### Mart Layer: Dimensional Modeling
+### Mart Layer: Dimensional Modeling and SQL for Data Checking
 
 - After the **clean layer**, we created **dimension and fact tables** and stored them in the **mart**.  
 - This step converts the staging/cleaned data into a **star schema** ready for BI tools like Metabase.  
@@ -356,21 +354,29 @@ ddocker compose --profile jobs run --rm \
 ### Visualization Layer: Metabase
 
 - After building the **mart layer** (facts and dims), we connected the database to **Metabase**.  
-- Using Metabase, we **queried and visualized** the data to answer the defined **business questions** (e.g., gender engagement and VLE).  
+- Using Metabase, we **queried and visualized** the data to answer the defined **business questions** (e.g., gender engagement and VLE).
+
+### Data Check Visualization
+- After creating the dashboard, we went on to create another visualization showing some data quality check.
+```sql
+SELECT (*)
+FROM group6_oulad_table__raw_counts
+```
 
 ---
 
 ## 3. Modeling Process 
 
 - **Star Schema Design:**  
+```mermaid
 erDiagram
   FACT_ASSESSMENT {
     int assessment_fact_key PK
     int student_key FK
-    int module_presentation_key FK
+    int module_presentation_length FK
     int date_key FK
     decimal score
-    string passed_flag
+    string final_result
   }
 
   FACT_VLE_INTERACTIONS {
@@ -381,20 +387,41 @@ erDiagram
     int clicks
   }
 
-  DIM_STUDENT { int student_key PK string gender string age_band string region }
-  DIM_MODULE { int module_key PK string module_code string module_name }
-  DIM_PRESENTATION { int module_presentation_key PK int module_key string presentation_code }
-  DIM_DATE { int date_key PK date calendar_date }
+  DIM_STUDENT {
+    int student_key PK
+    string gender
+    string age_band
+    string region
+  }
 
-  FACT_ASSESSMENT }o--|| DIM_STUDENT : student_key
-  FACT_ASSESSMENT }o--|| DIM_PRESENTATION : module_presentation_key
-  FACT_ASSESSMENT }o--|| DIM_DATE : date_key
+  DIM_MODULE {
+    int module_key PK
+    string module_name
+  }
 
-  FACT_VLE_INTERACTIONS }o--|| DIM_STUDENT : student_key
-  FACT_VLE_INTERACTIONS }o--|| DIM_PRESENTATION : module_presentation_key
-  FACT_VLE_INTERACTIONS }o--|| DIM_DATE : date_key
+  DIM_PRESENTATION {
+    int module_presentation_key PK
+    int module_key FK
+    string presentation_code
+    int year
+    string semester_start
+  }
 
-  DIM_PRESENTATION }o--|| DIM_MODULE : module_key
+  DIM_DATE {
+    int date_key PK
+    date calendar_date
+  }
+
+  FACT_ASSESSMENT }o--|| DIM_STUDENT : "student_key"
+  FACT_ASSESSMENT }o--|| DIM_PRESENTATION : "module_presentation_key"
+  FACT_ASSESSMENT }o--|| DIM_DATE : "date_key"
+
+  FACT_VLE_INTERACTIONS }o--|| DIM_STUDENT : "student_key"
+  FACT_VLE_INTERACTIONS }o--|| DIM_PRESENTATION : "module_presentation_key"
+  FACT_VLE_INTERACTIONS }o--|| DIM_DATE : "date_key"
+
+  DIM_PRESENTATION }o--|| DIM_MODULE : "module_key"
+```
 
 - **Challenges / Tradeoffs:**  
 - Identifying which data should be placed in the fact and dimension tables (e.g., two possible data sources: student VLE and assessment).
@@ -412,23 +439,26 @@ erDiagram
 - Collaborated to create a single source of truth through the fact and dimension tables.
   
 - **Shared vs Local Work:**  
-  - Server went down and since we were doing things the last minute, that has also affected our workflow greatly 
+  - At first our Mart data is not syncing to Metabase.
 
 - **Best Practices Learned:**  
   - Comparing queries and data
   - Unit Tests for Pipelines
   - Maintain a single source of truth to avoid duplication and inconsistency.
+  - Make sure task is distributed to everyone
     
 ---
 
 ## 5. Business Questions & Insights
 
 - **Business Questions Explored:**  
-  1. Which music genres generate the most revenue in each country?
-  2. How many customers fall into each tier - high, medium, low? 
-  3. How has revenue trended month-by-month over the last 2 years?
-  4. What are the top 20 tracks by total units sold, and which albums/artists do they belong to?
-  5. Do average unit prices differ across countries or regions?
+  1. What is the demographic distribution of students by gender and age?
+  2. How does VLE engagement vary by gender?
+  3. Which age group has the highest final results?
+  4. Does region affect the student academic performance?
+  5. How does the use of VLE vary by semester?
+  6. Which modules have the highest VLE engagement?
+  7. Does activity type affect the number of withdrawals?
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*
@@ -455,6 +485,7 @@ from {{ source('raw', 'monette_oulad___assessments') }}
   - Age does not necessarily dictates final assessment score
   - Males tend to use VLEs more than women
   - FFF is consistently has the highest VLE engagement
+  - VLE Engagement is higher in October
 
 ---
 
@@ -463,13 +494,15 @@ from {{ source('raw', 'monette_oulad___assessments') }}
 - **Technical Learnings:**  
   - Creating Fact and Dim table using SQL
   - Ingesting data from local CSVs which means creating and editing python script
+  - Cleaning using Dbeaver and SQL
+  - Creating dashboard for Data Checking.
 
 - **Team Learnings:**  
   - Collaborating using remote setup
   - Proper assignment of tasks to prevent backlogs
 
 - **Real-World Connection:**  
-  - The exercise showed how it is possible for data engineers to connect and collaborate with each other.
+  - The exercise showed how important it is to do data checking throughout the process. Although really high quality data is hard to come by, a huge chunk of the role of becoming a data engineer is making sure data is as high quality as possible.
 
 ---
 
@@ -479,4 +512,4 @@ from {{ source('raw', 'monette_oulad___assessments') }}
   - Each one of use would try it out and we would present with each other how we did the exercise.
 
 - **Generalization:**  
-  *(How this workflow could be applied to other datasets or business domains.)*  
+  - The part where we do cleaning comparing data from raw to once they are transformed in mart should be applied everywhere.
