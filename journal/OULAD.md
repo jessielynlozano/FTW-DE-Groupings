@@ -222,7 +222,7 @@ docker compose --profile jobs run --rm dlt python extract-loads/09-dlt-oulad-pip
 - **Example dbt Model (Albums):**
 
 ```sql
-"-- Step 1: Create the table
+-- Step 1: Create the table
 CREATE TABLE sandbox.monette_oulad___courses
 (
     code_module String,
@@ -238,7 +238,7 @@ SELECT
     code_module,
     code_presentation,
     module_presentation_length
-FROM raw.monette_oulad___courses;"
+FROM raw.monette_oulad___courses;
 ```
 
 **Note:**  
@@ -256,7 +256,7 @@ FROM raw.monette_oulad___courses;"
 - **Example Fact Table and Dim Table:**
 
 ```sql
-"--Code Presentation
+--Code Presentation
 SELECT
     code_module,
     code_presentation,
@@ -304,8 +304,6 @@ SELECT DISTINCT
         ELSE 'Unknown'
     END AS semester_start
 FROM clean.monette_oulad_vle;
-
-
 
 -- DIM Presentation; Add year and semester details to your dim_presentation using code_presentation
 CREATE TABLE mart.group6_oulad_dim_presentation (
@@ -368,8 +366,6 @@ SELECT
 FROM clean.monette_oulad_student_registration
 GROUP BY code_module, code_presentation;
 
-
-
 -- FACT ASSESSMENT
 CREATE TABLE mart.group6_ouland_fact_assessment (
     assessment_fact_key Int64,
@@ -406,7 +402,6 @@ SELECT id_site, id_student,
        concat(code_module, '_', code_presentation),
        date, sum_click
 FROM clean.monette_oulad_studentvle;
-"
 ```
 
 - Transformation was executed via Docker with the following command:
