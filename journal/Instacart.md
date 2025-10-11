@@ -83,20 +83,27 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
     - `dim_aisle` – represented product placement categories.  
     - `dim_user` – included user or customer-related attributes.  
     - `dim_time` – provided date and time breakdowns for trend analysis.
-   
-    ```sql
+      
+    ```sql   
+    {{ config(materialized="table", schema="mart", tags=["mart","instacart"]) }}
+    -- models/mart/2.4grp_instacart_dim_product.sql
+    
     SELECT
-  p.`p.product_name`                           AS product_name,
-  SUM(f.reordered)                             AS total_reorders,
-  ROUND(SUM(f.reordered) / COUNT(), 3)         AS reorder_rate
-FROM `2.4grp_instacart_fact_order_products` AS f
-JOIN `2.4grp_instacart_dim_product`         AS p
-  ON toString(f.product_id) = IFNULL(p.`p.product_id`, '')
-GROUP BY
-  p.`p.product_name`
-ORDER BY
-  total_reorders DESC
-LIMIT 10;
+        p.product_id,
+        p.product_name,
+        a.aisle,
+        d.department
+    FROM clean."2.4grp_instacart_products" AS p
+    LEFT JOIN clean."2.4grp_instacart_aisles" AS a
+        ON p.aisle_id = a.aisle_id
+    LEFT JOIN clean."2.4grp_instacart_departments" AS d
+        ON CAST(a.department_id AS String) = CAST(d.department_id AS String)
+    WHERE p.product_id IS NOT NULL
+    GROUP BY
+        p.product_id,
+        p.product_name,
+        a.aisle,
+        d.department
 
 ---
 
