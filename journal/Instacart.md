@@ -55,6 +55,28 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
     - `fact_orders` – consolidated order-level data including customer, product, and time references.  
     - `fact_order_products` – captured detailed order-product relationships (quantities, prices, and department linkage).
 
+      ### 🧩 `fact_orders.sql`
+      
+      ```sql
+      {{ config(
+          materialized = "table",
+          schema = "mart"
+      ) }}
+      
+      SELECT
+          o.order_id,
+          o.user_id,
+          dt.time_id,
+          o.order_number,
+          o.days_since_prior_order
+      FROM
+          {{ source('clean', 'grp24_instacart_orders') }} AS o
+      LEFT JOIN
+          {{ source('mart', 'grp24_instacart_dim_time') }} AS dt 
+          ON o.order_dow = dt.day_of_week 
+         AND o.order_hour_of_day = dt.hour_of_day
+
+
   - **Dimension Tables:**  
     - `dim_product` – contained product details and their corresponding department and aisle.  
     - `dim_department` – listed department names and IDs.  
