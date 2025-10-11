@@ -115,11 +115,10 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
   * Data Quality: 
   * Documentation: README & presentation outline
 
-- **Shared vs Local Work:**  
-  *(Issues faced with sync conflicts, version control, DB connections, etc.)*  
-
 - **Best Practices Learned:**  
-  *(E.g., using Git for dbt projects, naming conventions, documenting assumptions, group debugging sessions.)*  
+  * Use group tracker
+  * Clear naming conventions for tables and models
+  * Documenting assumptions and changes for smoother collaboration
 
 ---
 
