@@ -63,7 +63,10 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 ## 4. Collaboration & Setup
 
 - **Task Splitting:**  
-  *(How the team divided ingestion, modeling, BI dashboards, documentation.)*  
+  * Modeling: dbt SQL transformations
+  * Visualization: Metabase dashboards
+  * Data Quality: 
+  * Documentation: README & presentation outline
 
 - **Shared vs Local Work:**  
   *(Issues faced with sync conflicts, version control, DB connections, etc.)*  
@@ -76,9 +79,7 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 ## 5. Business Questions & Insights
 
 - **Business Questions Explored:**  
-  1. *(Example: Who are the top customers by revenue?)*  
-  2. *(Example: What factors contribute to student dropout?)*  
-  3. *(Example: Which genres/actors perform best in ratings?)*  
+  1. What are the peak hours and days for order placements?
 
 - **Dashboards / Queries:**  
   *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*  
@@ -91,20 +92,22 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 ## 6. Key Learnings
 
 - **Technical Learnings:**  
-  *(E.g., SQL joins, window functions, dbt builds/tests, schema design.)*  
+* Data transformations & schema design with **dbt**
+* Creating star schemas for BI queries
+* SQL joins, aggregations, and window functions in ClickHouse
 
 - **Team Learnings:**  
-  *(E.g., collaboration in shared environments, version control, importance of documentation.)*  
+* Practiced consistent naming conventions and documentation, ensuring team-wide clarity and reproducibility.
 
 - **Real-World Connection:**  
-  *(How this exercise relates to actual data engineering workflows in industry.)*  
+* Simulated the end-to-end process of maintaining data pipelines for business intelligence dashboards.
 
 ---
 
 ## 7. Future Improvements
 
 - **Next Steps with More Time:**  
-  *(E.g., add orchestration with Airflow/Prefect, implement testing, optimize queries, handle larger datasets.)*  
+
 
 - **Generalization:**  
-  *(How this workflow could be applied to other datasets or business domains.)*  
+
