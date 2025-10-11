@@ -166,5 +166,6 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 ## 7. Future Improvements
 
 - **Next Steps with More Time:**
+- Revisit DQ checks
 
 - **Generalization:**
