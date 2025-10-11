@@ -32,7 +32,7 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
         D --> E[Metabase dashboards]
   ```
 - **Data lineage graph:**  
-  ![Alt text](assets/data lineage graph.png)
+  ![Alt text](assets/data_lineage_graph.png)
 
 
 - **Tools Used:**  
