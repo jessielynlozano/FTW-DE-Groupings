@@ -153,8 +153,10 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 
 ## 7. Future Improvements
 
-- **Next Steps with More Time:**  
+- **Next Steps with More Time:**
+1. Revisit DQ checks.
 
-
-- **Generalization:**  
-
+- **Generalization:**
+1. Be more proactive in setting deadlines.
+2. Set schedule for realignment meetings.
+3. Communicate challenges.
