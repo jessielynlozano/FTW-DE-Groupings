@@ -129,7 +129,15 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
   1. What are the peak hours and days for order placements?
 
 - **Dashboards / Queries:**  
-  *(Add screenshots, SQL snippets, or summaries of dashboards created in Metabase.)*  
+  ```sql   
+  SELECT
+      p.d.department AS department,
+      COUNT(f.order_id) AS total_sold
+  FROM `2.4grp_instacart_fact_order_products` AS f
+  JOIN `2.4grp_instacart_dim_product` AS p
+      ON CAST(f.product_id AS String) = p.p.product_id
+  GROUP BY p.d.department
+  ORDER BY total_sold DESC;
 
 - **Key Insights:**  
   - *(Highlight 1–2 interesting findings. Example: “Rock was the top genre in North America, while Latin genres dominated in South America.”)*  
