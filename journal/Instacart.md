@@ -49,15 +49,18 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 ## 3. Modeling Process
 
 - **Source Structure (Normalized):**  
-  *(Describe how the original tables were structured — 3NF, relationships, etc.)*  
+  To optimize for analytical queries, the data was restructured into a **star schema** with a central fact table and supporting dimension tables.
 
-- **Star Schema Design:**  
-  - Fact Tables: *(e.g., FactSales, FactAssessment, FactRatings)*  
-  - Dimension Tables: *(e.g., Customer, Date, Genre, Student, Demographics, Title, Person)*  
+  - **Fact Tables:**  
+    - `fact_orders` – consolidated order-level data including customer, product, and time references.  
+    - `fact_order_products` – captured detailed order-product relationships (quantities, prices, and department linkage).
 
-- **Challenges / Tradeoffs:**  
-  *(E.g., handling missing data, many-to-many joins, exploding arrays, performance considerations.)*  
-
+  - **Dimension Tables:**  
+    - `dim_product` – contained product details and their corresponding department and aisle.  
+    - `dim_department` – listed department names and IDs.  
+    - `dim_aisle` – represented product placement categories.  
+    - `dim_user` – included user or customer-related attributes.  
+    - `dim_time` – provided date and time breakdowns for trend analysis.
 ---
 
 ## 4. Collaboration & Setup
