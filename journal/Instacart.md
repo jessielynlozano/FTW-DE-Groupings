@@ -83,6 +83,21 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
     - `dim_aisle` – represented product placement categories.  
     - `dim_user` – included user or customer-related attributes.  
     - `dim_time` – provided date and time breakdowns for trend analysis.
+   
+    ```sql
+    SELECT
+  p.`p.product_name`                           AS product_name,
+  SUM(f.reordered)                             AS total_reorders,
+  ROUND(SUM(f.reordered) / COUNT(), 3)         AS reorder_rate
+FROM `2.4grp_instacart_fact_order_products` AS f
+JOIN `2.4grp_instacart_dim_product`         AS p
+  ON toString(f.product_id) = IFNULL(p.`p.product_id`, '')
+GROUP BY
+  p.`p.product_name`
+ORDER BY
+  total_reorders DESC
+LIMIT 10;
+
 ---
 
 ## 4. Collaboration & Setup
