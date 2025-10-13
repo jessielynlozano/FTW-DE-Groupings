@@ -52,6 +52,68 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 - **Source Structure (Normalized):**  
   To optimize for analytical queries, the data was restructured into a **star schema** with a central fact table and supporting dimension tables.
 
+ - **Star Schema:**
+```mermaid
+erDiagram
+  FACT_ORDERS {
+    int order_id PK
+    int user_id FK
+    string time_id FK
+    int order_number
+    int days_since_prior_orders
+  }
+
+  FACT_ORDER_PRODUCTS {
+    int order_id PK  
+    int product_id FK
+    int add_to_cart_order
+    int reordered
+  }
+
+  DIM_PRODUCT {
+    int product_id PK
+    string product_name
+    string aisle
+    string department
+  }
+
+  DIM_TIME {
+    string time_id PK
+    int day_of_week
+    string day_name
+    int hour_of_day
+    string time_of_day
+  }
+
+  DIM_DEPARTMENT {
+    int department_id PK
+    string department_name
+  }
+
+  DIM_USERS {
+    int user_id PK
+    int first_order_id
+    int last_order_id
+    int total_orders
+  }
+
+  DIM_AISLES {
+    string aisle_id PK
+    string aisle_name
+  }
+
+  %% Relationships
+  FACT_ORDERS }o--|| DIM_USERS : "user_id"
+  FACT_ORDERS }o--|| DIM_TIME : "time_id"
+  FACT_ORDERS ||--o{ FACT_ORDER_PRODUCTS : "order_id"
+
+  FACT_ORDER_PRODUCTS }o--|| DIM_PRODUCT : "product_id"
+
+  DIM_PRODUCT }o--|| DIM_AISLES : "aisle"
+  DIM_PRODUCT }o--|| DIM_DEPARTMENT : "department"
+```
+
+
   - **Fact Tables:**  
     - `fact_orders` – consolidated order-level data including customer, product, and time references.  
     - `fact_order_products` – captured detailed order-product relationships (quantities, prices, and department linkage).
@@ -126,7 +188,16 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
 ## 5. Business Questions & Insights
 
 - **Business Questions Explored:**  
-  1. What are the peak hours and days for order placements?
+  1. What is the average number of products per order?
+  2. What is the average length of days since prior orders?
+  3. What is the percentage of returning customers?
+  4. What percentage of orders include reorders?
+  5. What are Top 10 most reordered product along with their reorder rate?
+  6. What aisle have the most reorders?
+  7. Which users have the most reorders?
+  8. Which department have the most orders?
+  9. Which day of the week have the most orders?
+  10. Which hour of the day have the most orders?
 
 - **Dashboards / Queries:**  
   ```sql   
@@ -140,7 +211,10 @@ This repository contains an end-to-end data pipeline built around the **InstaCar
   ORDER BY total_sold DESC;
 
 - **Key Insights:**  
-  - *(Highlight 1–2 interesting findings. Example: “Rock was the top genre in North America, while Latin genres dominated in South America.”)*  
+  - Reorders have a huge impact on sales.
+  - Banana and Fresh Fruits have the most reorders.
+  - Produce departments have the most order.
+  - Most customers buy at Sunday at 10 AM to 3 PM.
 
 ---
 
