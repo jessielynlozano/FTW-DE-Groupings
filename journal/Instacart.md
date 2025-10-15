@@ -187,7 +187,10 @@ erDiagram
 
 ## 5. Business Questions & Insights
 
-- **Business Questions Explored:**  
+- **Business Question:**
+-   How can we improve sales?
+
+- **Analytics Questions Explored:**
   1. What is the average number of products per order?
   2. What is the average length of days since prior orders?
   3. What is the percentage of returning customers?
