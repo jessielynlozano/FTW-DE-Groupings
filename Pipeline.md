@@ -1,0 +1,157 @@
+```mermaid
+graph TB
+    %% ===== PROJECT START =====
+    START(["<b>PROJECT START</b><br/>4Ps Program Analysis"])
+    
+    %% ===== PHASE 0: PROJECT FOUNDATION =====
+    subgraph PHASE0["<b>Phase 0: Project Foundation</b>"]
+        P0_1["0.1 Objective<br/>Definition<br/><br/>5 Key Objectives:<br/>Health, Education,<br/>Child Labor, Human<br/>Capital, Parenting"]
+        P0_2["0.2 Data Source<br/>Identification<br/><br/>PSA, DSWD, DepEd<br/>GRDP, LGU, Disasters"]
+        GATE0{"<b>Gate 0:</b><br/>Foundation<br/>Check"}
+    end
+    
+    %% ===== PHASE 1: DATA COLLECTION =====
+    subgraph PHASE1["<b>Phase 1: Data Collection</b>"]
+        P1_1["1.1 Data Source<br/>Assessment<br/><br/>CSV/Excel available?<br/>PDF scraping needed?"]
+        DEC1_1{"Data<br/>Available?"}
+        P1_2["1.2 Data Extraction<br/><br/>• CSV/Excel download<br/>• Web scraping<br/>(tabula/pdfplumber)"]
+        DEC1_2{"Extraction<br/>Successful?"}
+        GATE1{"<b>Gate 1:</b><br/>Data Collection<br/>Complete?"}
+    end
+    
+    %% ===== PHASE 2: DATA LOADING =====
+    subgraph PHASE2["<b>Phase 2: Data Loading & Infrastructure</b>"]
+        P2_1["2.1 dlt Pipeline<br/>Setup<br/><br/>Configure data<br/>load tool"]
+        P2_2["2.2 GitHub &<br/>Docker Setup<br/><br/>Version control<br/>Remote sessions"]
+        P2_3["2.3 Load to<br/>DBeaver RAW<br/><br/>Raw storage layer"]
+        DEC2{"RAW Data<br/>Loaded<br/>Correctly?"}
+        GATE2{"<b>Gate 2:</b><br/>Loading<br/>OK?"}
+    end
+    
+    %% ===== PHASE 3: DATA TRANSFORMATION =====
+    subgraph PHASE3["<b>Phase 3: Data Transformation</b>"]
+        P3_1["3.1 dbt<br/>Transformation<br/><br/>Main data cleaning<br/>& transformation"]
+        P3_2["3.2 PDF Additional<br/>Cleaning<br/><br/>pdfplumber/tabula<br/>if needed"]
+        P3_3["3.3 Load to<br/>DBeaver CLEAN<br/><br/>Clean storage layer"]
+        GATE3{"<b>Gate 3:</b><br/>Transform<br/>Complete?"}
+    end
+    
+    %% ===== PHASE 4: DATA QUALITY =====
+    subgraph PHASE4["<b>Phase 4: Data Quality Assurance</b>"]
+        P4_1["4.1 Data Validation<br/><br/>RAW vs CLEAN<br/>comparison"]
+        DEC4_1{"Data<br/>Quality<br/>Issues?"}
+        P4_2["4.2 Data Quality<br/>Verification<br/><br/>Completeness<br/>Accuracy<br/>Consistency"]
+        DEC4_2{"Validation<br/>Passed?"}
+        GATE4{"<b>Gate 4:</b><br/>Quality<br/>Assured?"}
+    end
+    
+    %% ===== PHASE 5: DATA MODELING =====
+    subgraph PHASE5["<b>Phase 5: Data Modeling</b>"]
+        P5_1["5.1 SANDBOX<br/>Exploration<br/><br/>Normalization<br/>Schema design<br/>Testing"]
+        P5_2["5.2 Fact & Dimension<br/>Table Design<br/><br/>Star/Snowflake<br/>schema"]
+        P5_3["5.3 Load to<br/>DBeaver MART<br/><br/>Production tables"]
+        DEC5{"Model<br/>Structure<br/>Valid?"}
+        GATE5{"<b>Gate 5:</b><br/>Model<br/>Ready?"}
+    end
+    
+    %% ===== PHASE 6: VISUALIZATION =====
+    subgraph PHASE6["<b>Phase 6: Visualization & Analysis</b>"]
+        P6_1["6.1 Tableau<br/>Connection<br/><br/>Connect DBeaver<br/>to Tableau"]
+        P6_2["6.2 Dashboard<br/>Development<br/><br/>Regional analysis<br/>visualizations"]
+        P6_3["6.3 Intervention<br/>Recommendations<br/><br/>Per region insights"]
+        DEC6{"Dashboards<br/>Meeting<br/>Objectives?"}
+        GATE6{"<b>Gate 6:</b><br/>Analysis<br/>Complete?"}
+    end
+    
+    %% ===== PHASE 7: DELIVERY =====
+    subgraph PHASE7["<b>Phase 7: Final Delivery</b>"]
+        P7_1["7.1 Documentation<br/><br/>Process docs<br/>Data dictionary<br/>User guides"]
+        P7_2["7.2 Stakeholder<br/>Presentation<br/><br/>Results & insights"]
+        FINAL["<b>PROJECT COMPLETE</b><br/>4Ps Analysis Delivered"]
+    end
+    
+    %% ===== MAIN FLOW =====
+    START --> P0_1
+    P0_1 --> P0_2
+    P0_2 --> GATE0
+    GATE0 -->|Pass| P1_1
+    GATE0 -->|Fail| P0_1
+    
+    P1_1 --> DEC1_1
+    DEC1_1 -->|No| P1_1
+    DEC1_1 -->|Yes| P1_2
+    P1_2 --> DEC1_2
+    DEC1_2 -->|No| P1_2
+    DEC1_2 -->|Yes| GATE1
+    GATE1 -->|Pass| P2_1
+    GATE1 -->|Fail| P1_1
+    
+    P2_1 --> P2_2
+    P2_2 --> P2_3
+    P2_3 --> DEC2
+    DEC2 -->|No| P2_3
+    DEC2 -->|Yes| GATE2
+    GATE2 -->|Pass| P3_1
+    GATE2 -->|Fail| P2_1
+    
+    P3_1 --> P3_2
+    P3_2 --> P3_3
+    P3_3 --> GATE3
+    GATE3 -->|Pass| P4_1
+    GATE3 -->|Fail| P3_1
+    
+    P4_1 --> DEC4_1
+    DEC4_1 -->|Yes| P3_1
+    DEC4_1 -->|No| P4_2
+    P4_2 --> DEC4_2
+    DEC4_2 -->|No| P4_1
+    DEC4_2 -->|Yes| GATE4
+    GATE4 -->|Pass| P5_1
+    GATE4 -->|Fail| P4_1
+    
+    P5_1 --> P5_2
+    P5_2 --> P5_3
+    P5_3 --> DEC5
+    DEC5 -->|No| P5_1
+    DEC5 -->|Yes| GATE5
+    GATE5 -->|Pass| P6_1
+    GATE5 -->|Fail| P5_1
+    
+    P6_1 --> P6_2
+    P6_2 --> P6_3
+    P6_3 --> DEC6
+    DEC6 -->|No| P6_2
+    DEC6 -->|Yes| GATE6
+    GATE6 -->|Pass| P7_1
+    GATE6 -->|Fail| P6_1
+    
+    P7_1 --> P7_2
+    P7_2 --> FINAL
+    
+    %% ===== STYLING =====
+    classDef startStyle fill:#f8f9fa,stroke:#000000,stroke-width:3px,color:#000000;
+    classDef phase0Style fill:#fff3cd,stroke:#856404,stroke-width:2px,color:#856404;
+    classDef phase1Style fill:#e7f3ff,stroke:#004085,stroke-width:2px,color:#004085;
+    classDef phase2Style fill:#d1ecf1,stroke:#0c5460,stroke-width:2px,color:#0c5460;
+    classDef phase3Style fill:#d4edda,stroke:#155724,stroke-width:2px,color:#155724;
+    classDef phase4Style fill:#fff3cd,stroke:#856404,stroke-width:2px,color:#856404;
+    classDef phase5Style fill:#e2d9f3,stroke:#6f42c1,stroke-width:2px,color:#4a148c;
+    classDef phase6Style fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#880e4f;
+    classDef phase7Style fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
+    classDef gateStyle fill:#ffd966,stroke:#bf8f00,stroke-width:2.5px,color:#000000;
+    classDef decisionStyle fill:#cfe2ff,stroke:#084298,stroke-width:2px,color:#084298;
+    classDef finalStyle fill:#d4edda,stroke:#155724,stroke-width:3px,color:#155724;
+    
+    class START startStyle;
+    class P0_1,P0_2 phase0Style;
+    class P1_1,P1_2 phase1Style;
+    class P2_1,P2_2,P2_3 phase2Style;
+    class P3_1,P3_2,P3_3 phase3Style;
+    class P4_1,P4_2 phase4Style;
+    class P5_1,P5_2,P5_3 phase5Style;
+    class P6_1,P6_2,P6_3 phase6Style;
+    class P7_1,P7_2 phase7Style;
+    class GATE0,GATE1,GATE2,GATE3,GATE4,GATE5,GATE6 gateStyle;
+    class DEC1_1,DEC1_2,DEC2,DEC4_1,DEC4_2,DEC5,DEC6 decisionStyle;
+    class FINAL finalStyle;
+```
