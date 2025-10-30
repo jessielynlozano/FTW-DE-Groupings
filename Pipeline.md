@@ -285,7 +285,7 @@ graph LR
     end
     
     %% ===== STEP 1 =====
-    subgraph STEP1["📚 STEP 1: Collect Information"]
+    subgraph STEP1["📚 STEP 1: Collection"]
         COLLECT["<b>Where we get data:</b><br/>• Government statistics (PSA)<br/>• 4Ps program reports (DSWD)<br/>• School records (DepEd)<br/>• Economic & disaster data<br/><br/><b>How:</b> Download files & reports"]
     end
     
