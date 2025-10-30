@@ -276,3 +276,57 @@ graph LR
     class DEC1_1,DEC1_2,DEC2,DEC4_1,DEC4_2,DEC5,DEC6 decisionStyle;
     class FINAL finalStyle;
 ```
+
+```mermaid
+graph TB
+    %% ===== PROGRAM GOALS =====
+    subgraph GOALS["🎯 OUR GOALS"]
+        OBJ["<b>What We Want to Know:</b><br/><br/>Is the 4Ps program improving:<br/>✓ Child health & nutrition?<br/>✓ School attendance?<br/>✓ Child labor reduction?<br/>✓ Family investments in children?<br/>✓ Parenting & community?"]
+    end
+    
+    %% ===== STEP 1 =====
+    subgraph STEP1["📚 STEP 1: Collect Information"]
+        COLLECT["<b>Where we get data:</b><br/>• Government statistics (PSA)<br/>• 4Ps program reports (DSWD)<br/>• School records (DepEd)<br/>• Economic & disaster data<br/><br/><b>How:</b> Download files & reports"]
+    end
+    
+    %% ===== STEP 2 =====
+    subgraph STEP2["✨ STEP 2: Clean & Organize"]
+        CLEAN["<b>What we do:</b><br/>• Fix errors & duplicates<br/>• Fill missing information<br/>• Standardize formats<br/>• Check accuracy<br/><br/><b>Result:</b> Reliable, ready-to-use data"]
+    end
+    
+    %% ===== STEP 3 =====
+    subgraph STEP3["🔍 STEP 3: Analyze"]
+        ANALYZE["<b>What we do:</b><br/>• Compare regions<br/>• Identify trends<br/>• Find patterns<br/>• Spot problem areas<br/><br/><b>Result:</b> Clear insights"]
+    end
+    
+    %% ===== STEP 4 =====
+    subgraph STEP4["📊 STEP 4: Share Results"]
+        RESULTS["<b>What we deliver:</b><br/>• Easy-to-read dashboards<br/>• Charts & graphs<br/>• Regional comparisons<br/>• Recommendations<br/><br/><b>Result:</b> Action plans for improvement"]
+    end
+    
+    %% ===== SUPPORT NOTE =====
+    NOTE["💡 Behind the scenes: All data is stored securely in the cloud,<br/>tracked for changes, and accessible to the team anytime, anywhere."]
+    
+    %% ===== FLOW =====
+    OBJ --> COLLECT
+    COLLECT --> CLEAN
+    CLEAN --> ANALYZE
+    ANALYZE --> RESULTS
+    
+    CLEAN -.-> NOTE
+    
+    %% ===== STYLING =====
+    classDef goalsStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:3px,color:#0d47a1,font-weight:bold;
+    classDef step1Style fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2.5px,color:#4a148c;
+    classDef step2Style fill:#fff9c4,stroke:#f9a825,stroke-width:2.5px,color:#f57f17;
+    classDef step3Style fill:#e1f5fe,stroke:#0288d1,stroke-width:2.5px,color:#01579b;
+    classDef step4Style fill:#e8f5e9,stroke:#43a047,stroke-width:2.5px,color:#2e7d32;
+    classDef noteStyle fill:#f5f5f5,stroke:#757575,stroke-width:1.5px,color:#424242,stroke-dasharray:3 3;
+    
+    class OBJ goalsStyle;
+    class COLLECT step1Style;
+    class CLEAN step2Style;
+    class ANALYZE step3Style;
+    class RESULTS step4Style;
+    class NOTE noteStyle;
+```
