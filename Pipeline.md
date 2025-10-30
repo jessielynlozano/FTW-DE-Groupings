@@ -278,7 +278,7 @@ graph LR
 ```
 
 ```mermaid
-graph TB
+graph LR
     %% ===== PROGRAM GOALS =====
     subgraph GOALS["🎯 OUR GOALS"]
         OBJ["<b>What We Want to Know:</b><br/><br/>Is the 4Ps program improving:<br/>✓ Child health & nutrition?<br/>✓ School attendance?<br/>✓ Child labor reduction?<br/>✓ Family investments in children?<br/>✓ Parenting & community?"]
