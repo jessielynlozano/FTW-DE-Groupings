@@ -38,22 +38,27 @@ erDiagram
         int Year
     }
     
+    fact_classroom_ratio_public_2019 ||--|| dim_region_codes : "by region"
+    fact_classroom_ratio_public_2019 ||--|| dim_grade_level : "by level"
     fact_classroom_ratio_public_2019 {
-        string region PK
-        string level
+        string region FK
+        string level FK
         float ratio
     }
     
+    fact_poverty_incidence ||--|| dim_region_codes : "by region"
     fact_poverty_incidence {
-        string Region PK
+        string Region FK
         float Poverty_Incidence_among_Families
         int Year
     }
     
+    fact_school_count_2020 ||--|| dim_region_codes : "by region"
+    fact_school_count_2020 ||--|| dim_grade_level : "by level"
     fact_school_count_2020 {
-        string region PK
+        string region FK
         string type
-        string level
+        string level FK
         int year
         int num_schools
     }
@@ -67,8 +72,9 @@ erDiagram
         string activity
     }
     
+    fact_4ps_beneficiaries ||--|| dim_island_group : "by region"
     fact_4ps_beneficiaries {
-        string region PK
+        string region FK
         string quarter
         int year
         string island
@@ -76,8 +82,9 @@ erDiagram
         int actual
     }
     
+    fact_child_labor ||--|| dim_island_group : "by island group"
     fact_child_labor {
-        string region_name PK
+        string region_name FK
         int year
         string island_group
         int total_children
@@ -96,8 +103,9 @@ erDiagram
         int year
     }
     
+    fact_fds_attendance ||--|| dim_region_codes : "by region"
     fact_fds_attendance {
-        string region PK
+        string region FK
         int year
         string quarter
         string activity
@@ -106,8 +114,9 @@ erDiagram
         float compliance_rate
     }
     
+    fact_number_of_hospitals ||--|| dim_island_group : "by region"
     fact_number_of_hospitals {
-        string Region PK
+        string Region FK
         string Island_Group
         int Total_Hospitals
         int Government_Hospitals
@@ -117,8 +126,9 @@ erDiagram
         int Private_Bed_Capacity
     }
     
+    fact_schools_per_offering_2020 ||--|| dim_region_codes : "by region"
     fact_schools_per_offering_2020 {
-        string region PK
+        string region FK
         int purely_jhs
         int purely_shs
         int jhs_with_shs
@@ -127,8 +137,9 @@ erDiagram
         int sub_total
     }
     
+    fact_prenatal_postnatal_2022 ||--|| dim_island_group : "by island group"
     fact_prenatal_postnatal_2022 {
-        string region PK
+        string region FK
         string island_group
         int survey_year
         int total_respondents
@@ -139,8 +150,9 @@ erDiagram
         int total_baby_postnatal_checked
     }
     
+    fact_immunization_2022 ||--|| dim_island_group : "by region"
     fact_immunization_2022 {
-        string Region PK
+        string Region FK
         string Island
         int Year
         int children_under5_count
